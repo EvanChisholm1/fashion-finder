@@ -1,11 +1,37 @@
 import { useState } from "react";
-import SearchBar, { SearchResponse } from "./components/Searchbar";
+import SearchBar from "./components/Searchbar";
+
+export type SearchResponse = Array<{
+    id: string;
+    link: string;
+    similarity: number;
+}>;
+
+const search = async (query: string): Promise<SearchResponse | null> => {
+    console.log(query);
+    const searchParams = new URLSearchParams();
+    searchParams.append("q", query);
+
+    const response = await fetch(
+        `http://localhost:5000/search?${searchParams.toString()}`
+    );
+
+    if (!response.ok) {
+        console.error("Failed to search");
+        return null;
+    }
+
+    return await response.json();
+};
 
 function App() {
     const [searchResults, setSearchResults] = useState<SearchResponse>([]);
 
-    const onResults = (results: SearchResponse) => {
-        setSearchResults(results);
+    const handleSearch = async (query: string) => {
+        search(query).then((data) => {
+            console.log(data);
+            setSearchResults(data as SearchResponse);
+        });
     };
 
     return (
@@ -13,7 +39,7 @@ function App() {
             <h1 className="text-6xl text-center p-5">Fashion Finder</h1>
 
             <div className="grid justify-center mb-5">
-                <SearchBar onResults={onResults} />
+                <SearchBar onSearch={handleSearch} />
             </div>
 
             <div className="grid justify-center">

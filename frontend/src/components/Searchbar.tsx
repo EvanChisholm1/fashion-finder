@@ -1,53 +1,26 @@
 import { FC, FormEvent, useState } from "react";
 import SearchIcon from "../icons/SearchIcon";
 
-export type SearchResponse = Array<{
-    id: string;
-    link: string;
-    similarity: number;
-}>;
-
-const search = async (query: string): Promise<SearchResponse | null> => {
-    console.log(query);
-    const searchParams = new URLSearchParams();
-    searchParams.append("q", query);
-
-    const response = await fetch(
-        `http://localhost:5000/search?${searchParams.toString()}`
-    );
-
-    if (!response.ok) {
-        console.error("Failed to search");
-        return null;
-    }
-
-    return await response.json();
-};
-
 export interface SearchBarProps {
-    onResults: (results: SearchResponse) => void;
+    onSearch: (query: string) => void;
 }
 
-const SearchBar: FC<SearchBarProps> = ({ onResults }) => {
+const SearchBar: FC<SearchBarProps> = ({ onSearch }) => {
     const [query, setQuery] = useState("");
 
     const handleChange = (e: FormEvent<HTMLInputElement>) => {
         setQuery(e.currentTarget.value);
     };
 
-    const handleSubmit = (e: FormEvent) => {
+    const onSubmit = (e: FormEvent) => {
         e.preventDefault();
-
-        search(query).then((data) => {
-            console.log(data);
-            onResults(data || []);
-        });
+        onSearch(query);
     };
 
     return (
         <form
-            onSubmit={handleSubmit}
-            className="flex place-items-center rounded-full focus-within:ring-2 shadow "
+            onSubmit={onSubmit}
+            className="flex place-items-center rounded-full focus-within:ring-2 shadow"
         >
             <input
                 value={query}
