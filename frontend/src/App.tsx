@@ -26,12 +26,13 @@ const search = async (query: string): Promise<SearchResponse | null> => {
 
 function App() {
     const [searchResults, setSearchResults] = useState<SearchResponse>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSearch = async (query: string) => {
-        search(query).then((data) => {
-            console.log(data);
-            setSearchResults(data as SearchResponse);
-        });
+        setIsLoading(true);
+        const data = await search(query);
+        setSearchResults(data as SearchResponse);
+        setIsLoading(false);
     };
 
     return (
@@ -42,19 +43,22 @@ function App() {
                 <SearchBar onSearch={handleSearch} />
             </div>
 
-            <div className="grid justify-center">
-                <ul className="w-[900px] grid grid-cols-2">
-                    {searchResults.map((result) => (
-                        <li key={result.id}>
-                            <img
-                                src={`http://localhost:5000/images/${result.id}`}
-                                alt=""
-                                width={500}
-                            />
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            {isLoading && <p className="text-center">Loading...</p>}
+            {!isLoading && (
+                <div className="grid justify-center">
+                    <ul className="w-[900px] grid grid-cols-2">
+                        {searchResults.map((result) => (
+                            <li key={result.id}>
+                                <img
+                                    src={`http://localhost:5000/images/${result.id}`}
+                                    alt=""
+                                    width={500}
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </>
     );
 }
