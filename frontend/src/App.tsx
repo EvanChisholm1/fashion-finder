@@ -1,5 +1,6 @@
 import { useState } from "react";
 import SearchBar from "./components/Searchbar";
+import { apiUrl } from "./apiUrl";
 
 export type SearchResponse = Array<{
     id: string;
@@ -12,9 +13,7 @@ const search = async (query: string): Promise<SearchResponse | null> => {
     const searchParams = new URLSearchParams();
     searchParams.append("q", query);
 
-    const response = await fetch(
-        `http://localhost:5000/search?${searchParams.toString()}`
-    );
+    const response = await fetch(`${apiUrl}/search?${searchParams.toString()}`);
 
     if (!response.ok) {
         console.error("Failed to search");
@@ -50,7 +49,7 @@ function App() {
                         {searchResults.map((result) => (
                             <li key={result.id}>
                                 <img
-                                    src={`http://localhost:5000/images/${result.id}`}
+                                    src={`${apiUrl}/images/${result.id}`}
                                     alt=""
                                     width={500}
                                 />
